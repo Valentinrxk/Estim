@@ -12,3 +12,5 @@ El diseño de la app está en Figma:
 
 El deployment está hecho con Netlify:                                                                                                                                                                                  
 [👉 Ver Deploy](https://estimapp.netlify.app/)
+> [!IMPORTANT]  
+>Revisar las politicas de privacidad.
