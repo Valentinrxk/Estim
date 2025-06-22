@@ -1,0 +1,25 @@
+GameDetail
+├── Fondo animado (dos blobs de color, arriba derecha y abajo izquierda)
+├── Contenedor principal (max-w-7xl, centrado)
+│   ├── Botón Volver (icono flecha, texto "Volver a Juegos")
+│   ├── LoadingSpinner (si loading)
+│   ├── ErrorMessage (si error)
+│   └── Detalles del juego (si game)
+│       ├── Header del juego
+│       │   ├── Imagen de fondo (h-96, rounded-2xl)
+│       │   ├── Overlay gradiente negro
+│       │   └── Contenido sobre la imagen
+│       │       ├── Título (nombre del juego)
+│       │       ├── Badges principales (rating, metacritic, fecha)
+│       │       └── Botón "Agregar a Top 5" (icono estrella, partículas)
+│       ├── Grid de contenido (lg:grid-cols-3)
+│       │   ├── Columna principal (lg:col-span-2)
+│       │   │   ├── Descripción (prose, v-html)
+│       │   │   └── Screenshots
+│       │   │       ├── Imagen principal
+│       │   │       └── Thumbnails (botones, seleccionable)
+│       │   └── Sidebar
+│       │       ├── Información del juego (rating, fecha, dev, publisher, ESRB)
+│       │       ├── Géneros (chips)
+│       │       └── Plataformas (chips)
+├── Notificación flotante (top-right, icono según tipo, mensaje, botón cerrar)
