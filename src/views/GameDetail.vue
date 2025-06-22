@@ -2,9 +2,8 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useTop5 } from '@/composables/useTop5'
-import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
-import ErrorMessage from '@/components/ui/ErrorMessage.vue'
-
+import LoadingSpinner from '@/components/ui/common/LoadingSpinner.vue'
+import ErrorMessage from '@/components/ui/common/ErrorMessage.vue'
 const route = useRoute()
 const router = useRouter()
 const props = defineProps({
@@ -250,7 +249,7 @@ onMounted(() => {
 
       <!-- Loading -->
       <div v-if="loading" class="min-h-[60vh] flex items-center justify-center">
-        <LoadingSpinner size="xl" :showText="true" loadingText="Cargando detalles épicos..." />
+        <LoadingSpinner size="xl" :showText="true" loadingText="Angelito Putin..." />
       </div>
 
       <!-- Error -->

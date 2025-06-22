@@ -208,7 +208,7 @@ const dividerGradientClasses = computed(() =>
             class="text-2xl font-bold animate-pulse transition-colors duration-500"
             :class="props.isDarkMode ? 'text-cyan-400' : 'text-blue-600'"
           >
-            🎮 Cargando juegos épicos...
+            🏳️‍🌈 Angelito putin....
           </p>
         </div>
 
