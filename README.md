@@ -1,29 +1,12 @@
-# Estim
+# ESTIM 🎮
 
-This template should help get you started developing with Vue 3 in Vite.
+Proyecto Vue 3 + Vite + Tailwind CSS  
+Aplicación web para gestión y detalle de juegos.
 
-## Recommended IDE Setup
+---
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## Diseño 🎨
 
-## Customize configuration
+El diseño de la app está en Figma:  
+[👉 Ver Figma](https://www.figma.com/design/xMzb626wVgzNjCdRz4s3AN/ESTIM?m=auto&t=cUe8fYBZEWOz3ITJ-6)
 
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
