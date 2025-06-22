@@ -120,7 +120,6 @@ onMounted(() => {
         : 'bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50'
     "
   >
-    <!-- Fondo animado -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none">
       <div
         class="absolute -top-40 -right-40 w-80 h-80 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse transition-colors duration-500"
@@ -135,12 +134,10 @@ onMounted(() => {
     <div class="relative z-10 max-w-7xl mx-auto px-4 py-8">
       <BackButton @click="goBack" :isDarkMode="isDarkMode" />
 
-      <!-- Loading -->
       <div v-if="loading" class="min-h-[60vh] flex items-center justify-center">
         <LoadingSpinner size="xl" :showText="true" loadingText="Cargando juego..." />
       </div>
 
-      <!-- Error -->
       <div v-else-if="error" class="min-h-[60vh] flex items-center justify-center relative z-50">
         <div class="max-w-md w-full">
           <ErrorMessage
@@ -154,7 +151,6 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Detalles del juego -->
       <div v-else-if="game" class="space-y-8">
         <GameHeroSection
           :game="game"
@@ -163,9 +159,7 @@ onMounted(() => {
           @add-to-top5="handleAddToTop5"
         />
 
-        <!-- Grid de contenido -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <!-- Columna principal -->
           <div class="lg:col-span-2 space-y-8">
             <GameDescription :game="game" :isDarkMode="isDarkMode" />
             <GameScreenshots
@@ -175,7 +169,6 @@ onMounted(() => {
             />
           </div>
 
-          <!-- Sidebar -->
           <GameInfoSidebar :game="game" :isDarkMode="isDarkMode" />
         </div>
       </div>

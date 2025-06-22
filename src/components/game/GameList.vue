@@ -22,7 +22,6 @@ const {
   previousPage,
 } = useGameFilters()
 
-// Top 5 functionality
 const { currentTop5, addToTop5, getStats } = useTop5()
 
 const props = defineProps({
@@ -32,7 +31,6 @@ const props = defineProps({
   },
 })
 
-// Estado para feedback de acciones
 const addingToTop5 = ref(new Set())
 const recentlyAdded = ref(new Set())
 
@@ -52,17 +50,14 @@ const filteredTotalResults = computed(() => {
   return Math.floor(totalResults.value * ratio)
 })
 
-// Verificar si un juego ya está en el Top 5
 const isInTop5 = (gameId) => {
   return currentTop5.value.some((game) => game.id === gameId)
 }
 
-// Verificar si el Top 5 está lleno
 const isTop5Full = computed(() => {
   return currentTop5.value.length >= 5
 })
 
-// Agregar juego al Top 5
 const handleAddToTop5 = async (game) => {
   if (isInTop5(game.id) || isTop5Full.value) return
 
@@ -72,15 +67,12 @@ const handleAddToTop5 = async (game) => {
     const result = addToTop5(game)
 
     if (result.success) {
-      // Mostrar feedback visual
       recentlyAdded.value.add(game.id)
 
-      // Remover el feedback después de 3 segundos
       setTimeout(() => {
         recentlyAdded.value.delete(game.id)
       }, 3000)
 
-      // Mostrar notificación
       showNotification(`¡${game.name} agregado al Top 5!`, 'success')
     } else {
       showNotification(result.message || 'No se pudo agregar al Top 5', 'error')
@@ -93,7 +85,6 @@ const handleAddToTop5 = async (game) => {
   }
 }
 
-// Sistema de notificaciones simple
 const notifications = ref([])
 
 const showNotification = (message, type = 'info') => {
@@ -202,7 +193,6 @@ const dividerGradientClasses = computed(() =>
   props.isDarkMode ? 'from-cyan-400 to-purple-400' : 'from-blue-500 to-purple-500',
 )
 
-// Obtener el texto del botón de Top 5
 const getTop5ButtonText = (game) => {
   if (addingToTop5.value.has(game.id)) return 'Agregando...'
   if (recentlyAdded.value.has(game.id)) return '¡Agregado!'
@@ -211,7 +201,6 @@ const getTop5ButtonText = (game) => {
   return 'Agregar a Top 5'
 }
 
-// Obtener las clases del botón de Top 5 - COLORES CORREGIDOS
 const getTop5ButtonClasses = (game) => {
   const baseClasses = 'border'
 
@@ -235,7 +224,6 @@ const getTop5ButtonClasses = (game) => {
     }`
   }
 
-  // ✅ COLORES CORREGIDOS: Naranja en light mode, Purple en dark mode
   return `${baseClasses} bg-gradient-to-r text-white shadow-lg ${
     props.isDarkMode
       ? 'from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 border-purple-500/50 shadow-purple-500/25 hover:shadow-purple-500/40'
@@ -246,10 +234,8 @@ const getTop5ButtonClasses = (game) => {
 
 <template>
   <div class="min-h-screen transition-all duration-500" :class="backgroundClasses">
-    <!-- Animated Background -->
     <AnimatedBackground :is-dark-mode="isDarkMode" />
 
-    <!-- Notifications -->
     <div class="fixed top-4 right-4 z-50 space-y-2">
       <div
         v-for="notification in notifications"
@@ -314,7 +300,6 @@ const getTop5ButtonClasses = (game) => {
           :class="dividerGradientClasses"
         />
 
-        <!-- Top 5 Status -->
         <div v-if="currentTop5.length > 0" class="mt-6">
           <div
             class="inline-flex items-center px-4 py-2 rounded-full border backdrop-blur-md"
@@ -346,14 +331,11 @@ const getTop5ButtonClasses = (game) => {
         :is-dark-mode="isDarkMode"
       />
 
-      <!-- Content Section -->
       <section>
-        <!-- Loading State -->
         <div v-if="loading" class="flex justify-center py-20">
           <LoadingSpinner size="xl" :show-text="true" loading-text="🎮 Cargando juegos épicos..." />
         </div>
 
-        <!-- Error State -->
         <div v-else-if="!loading && gamesWithRating.length === 0" class="flex justify-center py-20">
           <ErrorMessage
             type="error"
@@ -364,7 +346,6 @@ const getTop5ButtonClasses = (game) => {
           />
         </div>
 
-        <!-- Games Grid -->
         <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
           <article
             v-for="game in gamesWithRating"
@@ -377,7 +358,6 @@ const getTop5ButtonClasses = (game) => {
             "
           >
             <div class="p-6 h-full flex flex-col">
-              <!-- Game Cover -->
               <div
                 class="relative w-full h-52 rounded-xl mb-6 overflow-hidden group-hover:shadow-lg transition-all duration-300"
                 :class="
@@ -428,7 +408,6 @@ const getTop5ButtonClasses = (game) => {
                   ⭐ {{ formatRating(game.rating) }}
                 </div>
 
-                <!-- Top 5 Status Badge -->
                 <div
                   v-if="isInTop5(game.id)"
                   class="absolute top-4 left-4 px-2 py-1 rounded-lg backdrop-blur-md font-bold text-xs shadow-lg border"
@@ -442,7 +421,6 @@ const getTop5ButtonClasses = (game) => {
                 </div>
               </div>
 
-              <!-- Game Title -->
               <h2
                 class="font-bold mb-4 text-xl line-clamp-2 transition-colors duration-300"
                 :class="
@@ -454,7 +432,6 @@ const getTop5ButtonClasses = (game) => {
                 {{ game.name }}
               </h2>
 
-              <!-- Rating Stars -->
               <div
                 class="flex items-center mb-6"
                 role="img"
@@ -491,7 +468,6 @@ const getTop5ButtonClasses = (game) => {
                 </span>
               </div>
 
-              <!-- Genre Tags -->
               <div class="flex flex-wrap gap-2 mb-6 min-h-[2.5rem]">
                 <span
                   v-for="(genre, index) in getGenres(game)"
@@ -522,7 +498,6 @@ const getTop5ButtonClasses = (game) => {
                 </span>
               </div>
 
-              <!-- Platform Icons -->
               <div class="mb-8 min-h-[2.5rem] flex-grow">
                 <div
                   v-if="getPlatforms(game).length > 0"
@@ -587,9 +562,7 @@ const getTop5ButtonClasses = (game) => {
                 </div>
               </div>
 
-              <!-- Action Buttons -->
               <div class="flex flex-col gap-3 mt-auto">
-                <!-- Add to Top 5 Button -->
                 <button
                   @click="handleAddToTop5(game)"
                   :disabled="isInTop5(game.id) || isTop5Full || addingToTop5.has(game.id)"
@@ -661,7 +634,6 @@ const getTop5ButtonClasses = (game) => {
                   {{ getTop5ButtonText(game) }}
                 </button>
 
-                <!-- Details Button -->
                 <router-link
                   :to="{ name: 'game-detail', params: { id: game.id } }"
                   class="w-full flex items-center justify-center px-6 py-3 bg-gradient-to-r text-white rounded-xl font-bold transition-all duration-300 shadow-lg hover:scale-105 group-hover:shadow-xl text-center no-underline"
@@ -699,7 +671,6 @@ const getTop5ButtonClasses = (game) => {
         </div>
       </section>
 
-      <!-- Pagination -->
       <Pagination
         v-if="!loading && gamesWithRating.length > 0"
         :current-page="currentPage"

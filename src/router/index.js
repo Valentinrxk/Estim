@@ -58,7 +58,6 @@ const router = createRouter({
   },
 })
 
-// Cambiar título de la página
 router.beforeEach((to, from, next) => {
   document.title = to.meta.title || 'GameDiscover'
   next()

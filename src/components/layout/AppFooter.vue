@@ -39,7 +39,6 @@ const quickLinks = [
         : 'bg-white/95 border-blue-500/30 shadow-lg'
     "
   >
-    <!-- Efectos de fondo -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
       <div
         class="absolute -top-20 -left-20 w-40 h-40 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-pulse"
@@ -52,9 +51,7 @@ const quickLinks = [
     </div>
 
     <div class="relative z-10 max-w-7xl mx-auto px-4 py-12">
-      <!-- Contenido principal del footer -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-        <!-- Logo y descripción -->
         <div class="lg:col-span-2">
           <div class="flex items-center space-x-3 mb-6">
             <div
@@ -97,7 +94,6 @@ const quickLinks = [
             crea tu hall of fame personal.
           </p>
 
-          <!-- Redes sociales -->
           <div class="flex space-x-4">
             <a
               v-for="social in socialLinks"
@@ -126,7 +122,6 @@ const quickLinks = [
           </div>
         </div>
 
-        <!-- Enlaces rápidos -->
         <div>
           <h4
             class="font-bold text-lg mb-6 flex items-center transition-colors duration-300"
@@ -180,7 +175,6 @@ const quickLinks = [
           </ul>
         </div>
 
-        <!-- Estadísticas o info adicional -->
         <div>
           <h4
             class="font-bold text-lg mb-6 flex items-center transition-colors duration-300"

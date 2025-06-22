@@ -4,7 +4,6 @@ const top5Games = ref([])
 const MAX_TOP5 = 5
 
 export function useTop5() {
-  // Cargar desde localStorage al inicializar
   const loadFromStorage = () => {
     try {
       const stored = localStorage.getItem('gamehub-top5')
@@ -19,7 +18,6 @@ export function useTop5() {
     }
   }
 
-  // Guardar en localStorage
   const saveToStorage = () => {
     try {
       localStorage.setItem('gamehub-top5', JSON.stringify(top5Games.value))
@@ -28,9 +26,7 @@ export function useTop5() {
     }
   }
 
-  // Agregar juego al Top 5
   const addToTop5 = (game) => {
-    // Verificar si ya existe
     if (isInTop5(game.id)) {
       return {
         success: false,
@@ -39,7 +35,6 @@ export function useTop5() {
       }
     }
 
-    // Verificar si hay espacio
     if (top5Games.value.length >= MAX_TOP5) {
       return {
         success: false,
@@ -48,7 +43,6 @@ export function useTop5() {
       }
     }
 
-    // Agregar el juego con timestamp
     const gameWithTimestamp = {
       ...game,
       addedAt: new Date().toISOString(),
@@ -63,7 +57,6 @@ export function useTop5() {
     }
   }
 
-  // Remover juego del Top 5
   const removeFromTop5 = (gameId) => {
     const index = top5Games.value.findIndex((game) => game.id === gameId)
     if (index !== -1) {
@@ -81,7 +74,6 @@ export function useTop5() {
     }
   }
 
-  // Reordenar Top 5 completo
   const reorderTop5 = (newOrder) => {
     if (Array.isArray(newOrder)) {
       top5Games.value = [...newOrder]
@@ -97,7 +89,6 @@ export function useTop5() {
     }
   }
 
-  // Limpiar Top 5
   const clearTop5 = () => {
     top5Games.value = []
     saveToStorage()
@@ -107,12 +98,10 @@ export function useTop5() {
     }
   }
 
-  // Verificar si un juego está en el Top 5
   const isInTop5 = (gameId) => {
     return top5Games.value.some((game) => game.id === gameId)
   }
 
-  // Obtener estadísticas
   const getStats = () => {
     const total = top5Games.value.length
     const averageRating =
@@ -128,12 +117,10 @@ export function useTop5() {
     }
   }
 
-  // Computed properties
   const currentTop5 = computed(() => top5Games.value)
   const isTop5Full = computed(() => top5Games.value.length >= MAX_TOP5)
   const top5Count = computed(() => top5Games.value.length)
 
-  // Inicializar al crear el composable
   loadFromStorage()
 
   return {

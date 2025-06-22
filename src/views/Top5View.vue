@@ -481,7 +481,6 @@ const navigateToGameDetail = (gameId) => {
             </div>
           </div>
 
-          <!-- Action Buttons Mejorados -->
           <div class="flex flex-col sm:flex-row gap-6 justify-center">
             <button
               @click="openReorderModal"
@@ -524,7 +523,6 @@ const navigateToGameDetail = (gameId) => {
       </section>
     </main>
 
-    <!-- Reorder Modal -->
     <Top5ReorderModal
       :is-open="showReorderModal"
       :is-dark-mode="isDarkMode"

@@ -34,8 +34,8 @@ class GameService {
         page,
         page_size: pageSize,
         ordering,
-        metacritic: '70,100', // Solo juegos con metacritic score alto
-        dates: '2015-01-01,2024-12-31', // Juegos de los últimos años
+        metacritic: '70,100',
+        dates: '2015-01-01,2024-12-31',
       })
 
       console.log('Fetching games from:', url)

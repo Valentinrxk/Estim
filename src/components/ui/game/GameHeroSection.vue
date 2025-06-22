@@ -62,7 +62,6 @@
                 <span>{{ isGameInTop5 ? '¡En tu Top 5!' : 'Agregar a Top 5' }}</span>
               </div>
 
-              <!-- Efectos de partículas solo si no está en Top 5 -->
               <div
                 v-if="!isGameInTop5"
                 class="absolute -top-1 -right-1 w-3 h-3 bg-yellow-300 rounded-full animate-ping opacity-0 group-hover:opacity-100"

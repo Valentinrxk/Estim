@@ -1,31 +1,18 @@
 import { ref, computed } from 'vue'
 
 export function useGameFilters() {
-  // ==========================================
-  // CONFIGURATION
-  // ==========================================
   const API_KEY = import.meta.env.VITE_RAWG_API_KEY || 'your-api-key-here'
   const BASE_URL = 'https://api.rawg.io/api'
 
-  // ==========================================
-  // STATE
-  // ==========================================
   const loading = ref(false)
   const games = ref([])
   const currentPage = ref(1)
   const totalResults = ref(0)
   const totalPages = ref(0)
-  const pageSize = 20
 
-  // ==========================================
-  // COMPUTED
-  // ==========================================
   const hasNextPage = computed(() => currentPage.value < totalPages.value)
   const hasPreviousPage = computed(() => currentPage.value > 1)
 
-  // ==========================================
-  // API FUNCTIONS
-  // ==========================================
   const buildApiUrl = () => {
     const baseUrl = `${BASE_URL}/games`
     const params = new URLSearchParams()
@@ -37,12 +24,10 @@ export function useGameFilters() {
     params.append('page', currentPage.value.toString())
     params.append('page_size', pageSize.toString())
 
-    // ✅ MEJORES PARÁMETROS PARA JUEGOS MÁS RELEVANTES
-    params.append('ordering', '-metacritic,-rating,-added') // Metacritic, rating y popularidad
-    params.append('metacritic', '70,100') // Solo juegos con buen Metacritic score
-    params.append('dates', '2010-01-01,2024-12-31') // Juegos de la última década
-    params.append('platforms', '4,187,18,1,186') // PC, PS5, PS4, Xbox One, Xbox Series
-
+    params.append('ordering', '-metacritic,-rating,-added')
+    params.append('metacritic', '70,100')
+    params.append('dates', '2000-01-01,2024-12-31')
+    params.append('platforms', '4,187,18,1,186')
     return `${baseUrl}?${params.toString()}`
   }
 
@@ -80,9 +65,6 @@ export function useGameFilters() {
     }
   }
 
-  // ==========================================
-  // ACTIONS
-  // ==========================================
   const goToPage = (page) => {
     currentPage.value = page
     searchGames()

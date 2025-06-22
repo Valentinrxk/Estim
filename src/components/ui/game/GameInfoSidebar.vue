@@ -1,6 +1,5 @@
 <template>
   <div class="space-y-6">
-    <!-- Información del juego -->
     <div
       class="backdrop-blur-md rounded-2xl p-6 border transition-all duration-500"
       :class="isDarkMode ? 'bg-black/40 border-gray-700/50' : 'bg-white/70 border-gray-200/50'"
@@ -86,7 +85,6 @@
       </div>
     </div>
 
-    <!-- Géneros -->
     <div
       v-if="formattedGenres.length"
       class="backdrop-blur-md rounded-2xl p-6 border transition-all duration-500"
@@ -128,7 +126,6 @@
       </div>
     </div>
 
-    <!-- Plataformas -->
     <div
       v-if="formattedPlatforms.length"
       class="backdrop-blur-md rounded-2xl p-6 border transition-all duration-500"

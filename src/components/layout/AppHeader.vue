@@ -50,7 +50,6 @@ const navLinkClasses = computed(() => ({
     :class="[headerClasses, props.isDarkMode ? 'shadow-black/50' : 'shadow-gray-200/50']"
   >
     <div class="max-w-7xl mx-auto flex items-center justify-between">
-      <!-- Logo Gamer -->
       <button
         @click="goHome"
         class="group flex items-center space-x-3 hover:scale-105 transition-all duration-300"
@@ -59,7 +58,6 @@ const navLinkClasses = computed(() => ({
           class="relative w-10 h-10 bg-gradient-to-br rounded-xl flex items-center justify-center shadow-lg transition-all duration-300 group-hover:rotate-12"
           :class="logoClasses"
         >
-          <!-- Gaming Controller Icon -->
           <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
             <path
               d="M7.97 16.06c.8 0 1.54-.37 2.03-.99l.84-1.06c.2-.25.51-.4.84-.4s.64.15.84.4l.84 1.06c.49.62 1.23.99 2.03.99 1.46 0 2.61-1.15 2.61-2.61V9.61C18 8.15 16.85 7 15.39 7H8.61C7.15 7 6 8.15 6 9.61v3.84c0 1.46 1.15 2.61 2.61 2.61h-.64zM9.5 10.5c0-.28.22-.5.5-.5s.5.22.5.5-.22.5-.5.5-.5-.22-.5-.5zm0 2c0-.28.22-.5.5-.5s.5.22.5.5-.22.5-.5.5-.5-.22-.5-.5zm4-2c0-.28.22-.5.5-.5s.5.22.5.5-.22.5-.5.5-.5-.22-.5-.5zm0 2c0-.28.22-.5.5-.5s.5.22.5.5-.22.5-.5.5-.5-.22-.5-.5z"
@@ -90,7 +88,6 @@ const navLinkClasses = computed(() => ({
         </div>
       </button>
 
-      <!-- Menú navegación -->
       <nav class="hidden lg:flex items-center space-x-2">
         <router-link
           to="/"
@@ -188,7 +185,6 @@ const navLinkClasses = computed(() => ({
         </router-link>
       </nav>
 
-      <!-- Menú móvil -->
       <nav class="flex lg:hidden items-center space-x-1">
         <router-link
           to="/"

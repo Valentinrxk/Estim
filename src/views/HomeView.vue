@@ -157,7 +157,6 @@ onMounted(() => {
     </div>
 
     <div class="relative z-10 max-w-7xl mx-auto px-4 py-8">
-      <!-- Hero Section -->
       <HomeHeroSection
         :is-dark-mode="isDarkMode"
         :loading="loading"
@@ -165,14 +164,12 @@ onMounted(() => {
         @start-exploring="handleStartExploring"
       />
 
-      <!-- Featured Games Section -->
       <FeaturedGamesSection
         :is-dark-mode="isDarkMode"
         :games="FEATURED_GAMES"
         @game-click="navigateToGame"
       />
 
-      <!-- Recommended Games Section -->
       <RecommendedGamesSection
         v-if="showGameList"
         :is-dark-mode="isDarkMode"

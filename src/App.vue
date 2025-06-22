@@ -6,23 +6,19 @@ import AppFooter from '@/components/layout/AppFooter.vue'
 
 const isDarkMode = ref(true)
 
-// Cargar preferencia del usuario desde localStorage
 const loadThemePreference = () => {
   const savedTheme = localStorage.getItem('gamehub-theme')
   if (savedTheme) {
     isDarkMode.value = savedTheme === 'dark'
   } else {
-    // Si no hay preferencia guardada, usar la preferencia del sistema
     isDarkMode.value = window.matchMedia('(prefers-color-scheme: dark)').matches
   }
 }
 
-// Guardar preferencia en localStorage
 const saveThemePreference = () => {
   localStorage.setItem('gamehub-theme', isDarkMode.value ? 'dark' : 'light')
 }
 
-// Aplicar tema al documento
 const applyTheme = () => {
   if (isDarkMode.value) {
     document.documentElement.classList.add('dark')
@@ -37,7 +33,6 @@ const toggleDarkMode = () => {
   isDarkMode.value = !isDarkMode.value
 }
 
-// Watchers y lifecycle
 watch(isDarkMode, () => {
   applyTheme()
   saveThemePreference()
@@ -63,18 +58,15 @@ onMounted(() => {
   >
     <AppHeader :isDarkMode="isDarkMode" @toggle-dark-mode="toggleDarkMode" />
 
-    <!-- Main content con padding-top para compensar el header fijo -->
     <main class="flex-1 pt-20">
       <RouterView :isDarkMode="isDarkMode" />
     </main>
 
-    <!-- Footer -->
     <AppFooter :isDarkMode="isDarkMode" />
   </div>
 </template>
 
 <style>
-/* Variables CSS para temas */
 :root {
   --transition-theme: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -105,18 +97,15 @@ onMounted(() => {
   --accent-secondary: #a855f7;
 }
 
-/* Asegurar que el scroll sea suave */
 html {
   scroll-behavior: smooth;
 }
 
-/* Evitar que el contenido se mueva cuando aparece el scrollbar */
 body {
   overflow-y: scroll;
   transition: var(--transition-theme);
 }
 
-/* Transiciones globales para el cambio de tema */
 * {
   transition:
     background-color 0.3s ease,
