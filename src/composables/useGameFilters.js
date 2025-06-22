@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue'
 
 export function useGameFilters() {
-  const API_KEY = import.meta.env.VITE_RAWG_API_KEY || 'your-api-key-here'
+  const API_KEY = import.meta.env.VITE_RAWG_API_KEY
   const BASE_URL = 'https://api.rawg.io/api'
 
   const loading = ref(false)
@@ -9,6 +9,7 @@ export function useGameFilters() {
   const currentPage = ref(1)
   const totalResults = ref(0)
   const totalPages = ref(0)
+  const pageSize = 20
 
   const hasNextPage = computed(() => currentPage.value < totalPages.value)
   const hasPreviousPage = computed(() => currentPage.value > 1)
