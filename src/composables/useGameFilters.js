@@ -36,7 +36,12 @@ export function useGameFilters() {
 
     params.append('page', currentPage.value.toString())
     params.append('page_size', pageSize.toString())
-    params.append('ordering', '-rating') // Ordenar por rating descendente
+
+    // ✅ MEJORES PARÁMETROS PARA JUEGOS MÁS RELEVANTES
+    params.append('ordering', '-metacritic,-rating,-added') // Metacritic, rating y popularidad
+    params.append('metacritic', '70,100') // Solo juegos con buen Metacritic score
+    params.append('dates', '2010-01-01,2024-12-31') // Juegos de la última década
+    params.append('platforms', '4,187,18,1,186') // PC, PS5, PS4, Xbox One, Xbox Series
 
     return `${baseUrl}?${params.toString()}`
   }
@@ -114,4 +119,5 @@ export function useGameFilters() {
     previousPage,
   }
 }
+
 export default useGameFilters

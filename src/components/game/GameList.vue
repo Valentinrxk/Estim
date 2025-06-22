@@ -1,6 +1,7 @@
 <script setup>
-import { onMounted, computed } from 'vue'
+import { onMounted, computed, ref } from 'vue'
 import { useGameFilters } from '@/composables/useGameFilters'
+import { useTop5 } from '@/composables/useTop5'
 import LoadingSpinner from '@/components/ui/common/LoadingSpinner.vue'
 import ErrorMessage from '@/components/ui/common/ErrorMessage.vue'
 import AnimatedBackground from '@/components/ui/common/AnimatedBackground.vue'
@@ -21,12 +22,19 @@ const {
   previousPage,
 } = useGameFilters()
 
+// Top 5 functionality
+const { currentTop5, addToTop5, getStats } = useTop5()
+
 const props = defineProps({
   isDarkMode: {
     type: Boolean,
     default: false,
   },
 })
+
+// Estado para feedback de acciones
+const addingToTop5 = ref(new Set())
+const recentlyAdded = ref(new Set())
 
 const gamesWithRating = computed(() => {
   return games.value.filter((game) => {
@@ -43,6 +51,59 @@ const filteredTotalResults = computed(() => {
   const ratio = filteredCount / originalCount
   return Math.floor(totalResults.value * ratio)
 })
+
+// Verificar si un juego ya está en el Top 5
+const isInTop5 = (gameId) => {
+  return currentTop5.value.some((game) => game.id === gameId)
+}
+
+// Verificar si el Top 5 está lleno
+const isTop5Full = computed(() => {
+  return currentTop5.value.length >= 5
+})
+
+// Agregar juego al Top 5
+const handleAddToTop5 = async (game) => {
+  if (isInTop5(game.id) || isTop5Full.value) return
+
+  addingToTop5.value.add(game.id)
+
+  try {
+    const result = addToTop5(game)
+
+    if (result.success) {
+      // Mostrar feedback visual
+      recentlyAdded.value.add(game.id)
+
+      // Remover el feedback después de 3 segundos
+      setTimeout(() => {
+        recentlyAdded.value.delete(game.id)
+      }, 3000)
+
+      // Mostrar notificación
+      showNotification(`¡${game.name} agregado al Top 5!`, 'success')
+    } else {
+      showNotification(result.message || 'No se pudo agregar al Top 5', 'error')
+    }
+  } catch (error) {
+    console.error('Error adding to Top 5:', error)
+    showNotification('Error al agregar al Top 5', 'error')
+  } finally {
+    addingToTop5.value.delete(game.id)
+  }
+}
+
+// Sistema de notificaciones simple
+const notifications = ref([])
+
+const showNotification = (message, type = 'info') => {
+  const id = Date.now()
+  notifications.value.push({ id, message, type })
+
+  setTimeout(() => {
+    notifications.value = notifications.value.filter((n) => n.id !== id)
+  }, 4000)
+}
 
 onMounted(() => {
   searchGames()
@@ -140,12 +201,101 @@ const subtitleClasses = computed(() => (props.isDarkMode ? 'text-gray-300' : 'te
 const dividerGradientClasses = computed(() =>
   props.isDarkMode ? 'from-cyan-400 to-purple-400' : 'from-blue-500 to-purple-500',
 )
+
+// Obtener el texto del botón de Top 5
+const getTop5ButtonText = (game) => {
+  if (addingToTop5.value.has(game.id)) return 'Agregando...'
+  if (recentlyAdded.value.has(game.id)) return '¡Agregado!'
+  if (isInTop5(game.id)) return 'En Top 5'
+  if (isTop5Full.value) return 'Top 5 Lleno'
+  return 'Agregar a Top 5'
+}
+
+// Obtener las clases del botón de Top 5 - COLORES CORREGIDOS
+const getTop5ButtonClasses = (game) => {
+  const baseClasses = 'border'
+
+  if (recentlyAdded.value.has(game.id)) {
+    return `${baseClasses} bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white border-green-400/50 shadow-green-500/25`
+  }
+
+  if (isInTop5(game.id)) {
+    return `${baseClasses} ${
+      props.isDarkMode
+        ? 'bg-gray-800 border-gray-600 text-gray-400 shadow-gray-500/25'
+        : 'bg-gray-200 border-gray-300 text-gray-500 shadow-gray-300/25'
+    }`
+  }
+
+  if (isTop5Full.value) {
+    return `${baseClasses} ${
+      props.isDarkMode
+        ? 'bg-gray-900 border-gray-700 text-gray-500 shadow-gray-500/25'
+        : 'bg-gray-100 border-gray-200 text-gray-400 shadow-gray-200/25'
+    }`
+  }
+
+  // ✅ COLORES CORREGIDOS: Naranja en light mode, Purple en dark mode
+  return `${baseClasses} bg-gradient-to-r text-white shadow-lg ${
+    props.isDarkMode
+      ? 'from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 border-purple-500/50 shadow-purple-500/25 hover:shadow-purple-500/40'
+      : 'from-orange-500 to-pink-500 hover:from-orange-400 hover:to-pink-400 border-orange-400/50 shadow-orange-500/25 hover:shadow-orange-500/40'
+  }`
+}
 </script>
 
 <template>
   <div class="min-h-screen transition-all duration-500" :class="backgroundClasses">
-    <!-- Animated Background usando TU componente -->
+    <!-- Animated Background -->
     <AnimatedBackground :is-dark-mode="isDarkMode" />
+
+    <!-- Notifications -->
+    <div class="fixed top-4 right-4 z-50 space-y-2">
+      <div
+        v-for="notification in notifications"
+        :key="notification.id"
+        class="px-6 py-3 rounded-lg shadow-lg backdrop-blur-md border transition-all duration-300 animate-pulse"
+        :class="
+          notification.type === 'success'
+            ? 'bg-green-500/90 text-white border-green-400/50'
+            : notification.type === 'error'
+              ? 'bg-red-500/90 text-white border-red-400/50'
+              : 'bg-blue-500/90 text-white border-blue-400/50'
+        "
+      >
+        <div class="flex items-center space-x-2">
+          <svg
+            v-if="notification.type === 'success'"
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+          <svg
+            v-else-if="notification.type === 'error'"
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+          <span class="font-semibold">{{ notification.message }}</span>
+        </div>
+      </div>
+    </div>
 
     <main class="relative z-10 max-w-6xl mx-auto px-4 py-8">
       <!-- Header -->
@@ -157,15 +307,37 @@ const dividerGradientClasses = computed(() =>
           🎮 JUEGOS TOP 🎮
         </h1>
         <p class="text-xl transition-colors duration-500 mb-4" :class="subtitleClasses">
-          Descubrí tu próximo juego épico
+          Descubrí tu próximo juego épico y agrégalo a tu Top 5
         </p>
         <div
           class="w-32 h-1 bg-gradient-to-r mx-auto rounded-full transition-all duration-500"
           :class="dividerGradientClasses"
         />
+
+        <!-- Top 5 Status -->
+        <div v-if="currentTop5.length > 0" class="mt-6">
+          <div
+            class="inline-flex items-center px-4 py-2 rounded-full border backdrop-blur-md"
+            :class="
+              props.isDarkMode
+                ? 'bg-black/40 border-cyan-500/30 text-cyan-400'
+                : 'bg-white/60 border-orange-500/30 text-orange-600'
+            "
+          >
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <span class="text-sm font-semibold"> Top 5: {{ currentTop5.length }}/5 juegos </span>
+          </div>
+        </div>
       </header>
 
-      <!-- Results Info usando TU componente -->
+      <!-- Results Info -->
       <ResultsInfo
         :loading="loading"
         :results-text="resultsText"
@@ -176,12 +348,12 @@ const dividerGradientClasses = computed(() =>
 
       <!-- Content Section -->
       <section>
-        <!-- Loading State usando TU componente -->
+        <!-- Loading State -->
         <div v-if="loading" class="flex justify-center py-20">
           <LoadingSpinner size="xl" :show-text="true" loading-text="🎮 Cargando juegos épicos..." />
         </div>
 
-        <!-- Error State usando TU componente -->
+        <!-- Error State -->
         <div v-else-if="!loading && gamesWithRating.length === 0" class="flex justify-center py-20">
           <ErrorMessage
             type="error"
@@ -201,7 +373,7 @@ const dividerGradientClasses = computed(() =>
             :class="
               props.isDarkMode
                 ? 'bg-gray-900/80 border-gray-700 hover:border-cyan-400/50 hover:shadow-cyan-500/20'
-                : 'bg-white/80 border-gray-200 hover:border-blue-400/50 hover:shadow-blue-500/20'
+                : 'bg-white/80 border-gray-200 hover:border-orange-400/50 hover:shadow-orange-500/20'
             "
           >
             <div class="p-6 h-full flex flex-col">
@@ -211,7 +383,7 @@ const dividerGradientClasses = computed(() =>
                 :class="
                   props.isDarkMode
                     ? 'bg-gradient-to-br from-gray-800 to-gray-900 group-hover:shadow-cyan-500/20'
-                    : 'bg-gradient-to-br from-gray-100 to-gray-200 group-hover:shadow-blue-500/20'
+                    : 'bg-gradient-to-br from-gray-100 to-gray-200 group-hover:shadow-orange-500/20'
                 "
               >
                 <img
@@ -255,6 +427,19 @@ const dividerGradientClasses = computed(() =>
                 >
                   ⭐ {{ formatRating(game.rating) }}
                 </div>
+
+                <!-- Top 5 Status Badge -->
+                <div
+                  v-if="isInTop5(game.id)"
+                  class="absolute top-4 left-4 px-2 py-1 rounded-lg backdrop-blur-md font-bold text-xs shadow-lg border"
+                  :class="
+                    props.isDarkMode
+                      ? 'bg-purple-500/90 text-white border-purple-400/50'
+                      : 'bg-orange-500/90 text-white border-orange-400/50'
+                  "
+                >
+                  🏆 TOP 5
+                </div>
               </div>
 
               <!-- Game Title -->
@@ -263,7 +448,7 @@ const dividerGradientClasses = computed(() =>
                 :class="
                   props.isDarkMode
                     ? 'text-white group-hover:text-cyan-400'
-                    : 'text-gray-900 group-hover:text-blue-600'
+                    : 'text-gray-900 group-hover:text-orange-600'
                 "
               >
                 {{ game.name }}
@@ -316,7 +501,7 @@ const dividerGradientClasses = computed(() =>
                     index === 0
                       ? props.isDarkMode
                         ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30 hover:bg-cyan-500/30'
-                        : 'bg-blue-500/20 text-blue-600 border-blue-500/30 hover:bg-blue-500/30'
+                        : 'bg-orange-500/20 text-orange-600 border-orange-500/30 hover:bg-orange-500/30'
                       : index === 1
                         ? 'bg-purple-500/20 text-purple-400 border-purple-500/30 hover:bg-purple-500/30'
                         : 'bg-pink-500/20 text-pink-400 border-pink-500/30 hover:bg-pink-500/30',
@@ -353,7 +538,7 @@ const dividerGradientClasses = computed(() =>
                     :class="[
                       props.isDarkMode
                         ? 'bg-gray-800 border-gray-600 text-gray-300 hover:border-cyan-400/50 hover:text-cyan-400'
-                        : 'bg-gray-100 border-gray-300 text-gray-600 hover:border-blue-400/50 hover:text-blue-600',
+                        : 'bg-gray-100 border-gray-300 text-gray-600 hover:border-orange-400/50 hover:text-orange-600',
                       getPlatforms(game).length === 1 ? 'px-6 py-3' : '',
                     ]"
                   >
@@ -402,44 +587,119 @@ const dividerGradientClasses = computed(() =>
                 </div>
               </div>
 
-              <!-- Details Button -->
-              <router-link
-                :to="{ name: 'game-detail', params: { id: game.id } }"
-                class="w-full flex items-center justify-center px-8 py-4 bg-gradient-to-r text-white rounded-xl font-bold transition-all duration-300 shadow-lg hover:scale-105 group-hover:shadow-xl mt-auto text-center no-underline text-lg"
-                :class="
-                  props.isDarkMode
-                    ? 'from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 shadow-cyan-500/25 hover:shadow-cyan-500/40'
-                    : 'from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 shadow-blue-500/25 hover:shadow-blue-500/40'
-                "
-              >
-                <svg
-                  class="w-6 h-6 mr-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
+              <!-- Action Buttons -->
+              <div class="flex flex-col gap-3 mt-auto">
+                <!-- Add to Top 5 Button -->
+                <button
+                  @click="handleAddToTop5(game)"
+                  :disabled="isInTop5(game.id) || isTop5Full || addingToTop5.has(game.id)"
+                  class="w-full px-6 py-3 rounded-xl font-bold text-sm transition-all duration-300 hover:scale-105 shadow-lg flex items-center justify-center disabled:cursor-not-allowed"
+                  :class="getTop5ButtonClasses(game)"
                 >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                  />
-                </svg>
-                Ver Detalles
-              </router-link>
+                  <svg
+                    v-if="addingToTop5.has(game.id)"
+                    class="w-5 h-5 mr-2 animate-spin"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      class="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="4"
+                    />
+                    <path
+                      class="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  <svg
+                    v-else-if="recentlyAdded.has(game.id)"
+                    class="w-5 h-5 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  <svg
+                    v-else-if="isInTop5(game.id)"
+                    class="w-5 h-5 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <svg
+                    v-else
+                    class="w-5 h-5 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 4v16m8-8H4"
+                    />
+                  </svg>
+                  {{ getTop5ButtonText(game) }}
+                </button>
+
+                <!-- Details Button -->
+                <router-link
+                  :to="{ name: 'game-detail', params: { id: game.id } }"
+                  class="w-full flex items-center justify-center px-6 py-3 bg-gradient-to-r text-white rounded-xl font-bold transition-all duration-300 shadow-lg hover:scale-105 group-hover:shadow-xl text-center no-underline"
+                  :class="
+                    props.isDarkMode
+                      ? 'from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 shadow-cyan-500/25 hover:shadow-cyan-500/40'
+                      : 'from-orange-600 to-pink-600 hover:from-orange-500 hover:to-pink-500 shadow-orange-500/25 hover:shadow-orange-500/40'
+                  "
+                >
+                  <svg
+                    class="w-5 h-5 mr-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
+                  </svg>
+                  Ver Detalles
+                </router-link>
+              </div>
             </div>
           </article>
         </div>
       </section>
 
-      <!-- Pagination usando TU componente -->
+      <!-- Pagination -->
       <Pagination
         v-if="!loading && gamesWithRating.length > 0"
         :current-page="currentPage"

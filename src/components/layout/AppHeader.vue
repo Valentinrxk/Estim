@@ -66,7 +66,6 @@ const navLinkClasses = computed(() => ({
             />
           </svg>
 
-          <!-- Efectos de brillo -->
           <div
             class="absolute -inset-1 bg-gradient-to-br rounded-xl blur opacity-30 group-hover:opacity-60 transition-opacity duration-300"
             :class="logoClasses"
@@ -115,7 +114,7 @@ const navLinkClasses = computed(() => ({
               d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
             />
           </svg>
-          <span>Home</span>
+          <span>Inicio</span>
           <div
             v-if="route.name === 'home'"
             class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r"
@@ -147,7 +146,7 @@ const navLinkClasses = computed(() => ({
               d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M15 14h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <span>Games</span>
+          <span>Juegos</span>
           <div
             v-if="isGames"
             class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r"
@@ -255,7 +254,6 @@ const navLinkClasses = computed(() => ({
 
       <!-- Controles -->
       <div class="flex items-center space-x-3">
-        <!-- Toggle Dark Mode -->
         <button
           @click="toggleDarkMode"
           class="group relative flex items-center space-x-2 px-4 py-2.5 rounded-xl font-bold transition-all duration-500 hover:scale-105 shadow-lg overflow-hidden"
@@ -265,12 +263,10 @@ const navLinkClasses = computed(() => ({
               : 'bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-700 hover:to-gray-800 text-white shadow-gray-500/25 hover:shadow-gray-500/40'
           "
         >
-          <!-- Efecto de brillo en hover -->
           <div
             class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"
           ></div>
 
-          <!-- Icono con animación -->
           <div class="relative z-10 transition-transform duration-500 group-hover:rotate-180">
             <svg
               v-if="props.isDarkMode"
