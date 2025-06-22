@@ -1,6 +1,11 @@
 <script setup>
 import { onMounted, computed } from 'vue'
 import { useGameFilters } from '@/composables/useGameFilters'
+import LoadingSpinner from '@/components/ui/common/LoadingSpinner.vue'
+import ErrorMessage from '@/components/ui/common/ErrorMessage.vue'
+import AnimatedBackground from '@/components/ui/common/AnimatedBackground.vue'
+import ResultsInfo from '@/components/ui/common/ResultsInfo.vue'
+import Pagination from '@/components/ui/common/Pagination.vue'
 
 const {
   currentPage,
@@ -139,22 +144,11 @@ const dividerGradientClasses = computed(() =>
 
 <template>
   <div class="min-h-screen transition-all duration-500" :class="backgroundClasses">
-    <div class="fixed inset-0 overflow-hidden pointer-events-none">
-      <div
-        class="absolute -top-40 -right-40 w-80 h-80 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"
-        :class="props.isDarkMode ? 'bg-cyan-500' : 'bg-blue-400'"
-      />
-      <div
-        class="absolute -bottom-40 -left-40 w-80 h-80 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-2000"
-        :class="props.isDarkMode ? 'bg-pink-500' : 'bg-purple-400'"
-      />
-      <div
-        class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-pulse animation-delay-4000"
-        :class="props.isDarkMode ? 'bg-yellow-500' : 'bg-pink-300'"
-      />
-    </div>
+    <!-- Animated Background usando TU componente -->
+    <AnimatedBackground :is-dark-mode="isDarkMode" />
 
     <main class="relative z-10 max-w-6xl mx-auto px-4 py-8">
+      <!-- Header -->
       <header class="mb-12 text-center">
         <h1
           class="text-5xl font-bold bg-gradient-to-r bg-clip-text text-transparent mb-6 transition-all duration-500"
@@ -171,68 +165,34 @@ const dividerGradientClasses = computed(() =>
         />
       </header>
 
-      <div
-        v-if="!loading"
-        class="mb-8 text-center transition-colors duration-500"
-        :class="subtitleClasses"
-      >
-        <p class="text-lg font-semibold">
-          {{ resultsText }}
-        </p>
-        <p v-if="totalPages > 1" class="text-sm mt-2 opacity-75">
-          Página {{ currentPage }} de {{ totalPages }}
-        </p>
-      </div>
+      <!-- Results Info usando TU componente -->
+      <ResultsInfo
+        :loading="loading"
+        :results-text="resultsText"
+        :current-page="currentPage"
+        :total-pages="totalPages"
+        :is-dark-mode="isDarkMode"
+      />
 
+      <!-- Content Section -->
       <section>
-        <div v-if="loading" class="text-center py-20">
-          <div class="relative inline-block mb-8">
-            <div
-              class="w-20 h-20 border-4 border-t-4 rounded-full animate-spin"
-              :class="
-                props.isDarkMode
-                  ? 'border-gray-700 border-t-cyan-400'
-                  : 'border-gray-300 border-t-blue-500'
-              "
-            />
-            <div
-              class="absolute inset-0 w-20 h-20 border-4 border-b-4 rounded-full animate-spin animation-delay-1000"
-              :class="
-                props.isDarkMode
-                  ? 'border-gray-700 border-b-purple-400'
-                  : 'border-gray-300 border-b-purple-500'
-              "
-            />
-          </div>
-          <p
-            class="text-2xl font-bold animate-pulse transition-colors duration-500"
-            :class="props.isDarkMode ? 'text-cyan-400' : 'text-blue-600'"
-          >
-            🏳️‍🌈 Angelito putin....
-          </p>
+        <!-- Loading State usando TU componente -->
+        <div v-if="loading" class="flex justify-center py-20">
+          <LoadingSpinner size="xl" :show-text="true" loading-text="🎮 Cargando juegos épicos..." />
         </div>
 
-        <div
-          v-else-if="!loading && gamesWithRating.length === 0"
-          class="text-center py-20 transition-colors duration-500"
-          :class="props.isDarkMode ? 'text-red-400' : 'text-red-600'"
-        >
-          <div class="text-8xl mb-6">😔</div>
-          <h3 class="text-2xl font-bold mb-4">No se encontraron juegos</h3>
-          <p class="text-lg opacity-75">Intenta recargar la página</p>
-          <button
-            @click="searchGames"
-            class="mt-6 px-8 py-3 rounded-xl font-bold transition-all duration-300 hover:scale-105 shadow-lg"
-            :class="
-              props.isDarkMode
-                ? 'bg-cyan-600 hover:bg-cyan-500 text-white shadow-cyan-500/25'
-                : 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-500/25'
-            "
-          >
-            🔄 Recargar
-          </button>
+        <!-- Error State usando TU componente -->
+        <div v-else-if="!loading && gamesWithRating.length === 0" class="flex justify-center py-20">
+          <ErrorMessage
+            type="error"
+            title="No se encontraron juegos"
+            message="No hay juegos disponibles con rating válido en este momento."
+            details="Intenta recargar la página o verifica tu conexión a internet."
+            @retry="searchGames"
+          />
         </div>
 
+        <!-- Games Grid -->
         <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
           <article
             v-for="game in gamesWithRating"
@@ -245,6 +205,7 @@ const dividerGradientClasses = computed(() =>
             "
           >
             <div class="p-6 h-full flex flex-col">
+              <!-- Game Cover -->
               <div
                 class="relative w-full h-52 rounded-xl mb-6 overflow-hidden group-hover:shadow-lg transition-all duration-300"
                 :class="
@@ -279,6 +240,7 @@ const dividerGradientClasses = computed(() =>
                   class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                 />
 
+                <!-- Rating Badge -->
                 <div
                   class="absolute top-4 right-4 px-3 py-2 rounded-xl backdrop-blur-md font-bold text-sm shadow-lg border"
                   :class="
@@ -295,6 +257,7 @@ const dividerGradientClasses = computed(() =>
                 </div>
               </div>
 
+              <!-- Game Title -->
               <h2
                 class="font-bold mb-4 text-xl line-clamp-2 transition-colors duration-300"
                 :class="
@@ -306,6 +269,7 @@ const dividerGradientClasses = computed(() =>
                 {{ game.name }}
               </h2>
 
+              <!-- Rating Stars -->
               <div
                 class="flex items-center mb-6"
                 role="img"
@@ -342,6 +306,7 @@ const dividerGradientClasses = computed(() =>
                 </span>
               </div>
 
+              <!-- Genre Tags -->
               <div class="flex flex-wrap gap-2 mb-6 min-h-[2.5rem]">
                 <span
                   v-for="(genre, index) in getGenres(game)"
@@ -372,6 +337,7 @@ const dividerGradientClasses = computed(() =>
                 </span>
               </div>
 
+              <!-- Platform Icons -->
               <div class="mb-8 min-h-[2.5rem] flex-grow">
                 <div
                   v-if="getPlatforms(game).length > 0"
@@ -436,6 +402,7 @@ const dividerGradientClasses = computed(() =>
                 </div>
               </div>
 
+              <!-- Details Button -->
               <router-link
                 :to="{ name: 'game-detail', params: { id: game.id } }"
                 class="w-full flex items-center justify-center px-8 py-4 bg-gradient-to-r text-white rounded-xl font-bold transition-all duration-300 shadow-lg hover:scale-105 group-hover:shadow-xl mt-auto text-center no-underline text-lg"
@@ -472,90 +439,19 @@ const dividerGradientClasses = computed(() =>
         </div>
       </section>
 
-      <nav
-        v-if="!loading && gamesWithRating.length > 0 && totalPages > 1"
-        class="flex flex-col sm:flex-row items-center justify-center gap-6 py-8"
-        aria-label="Navegación de páginas"
-      >
-        <button
-          @click="handlePreviousPage"
-          :disabled="!hasPreviousPage"
-          class="flex items-center px-8 py-4 bg-gradient-to-r text-white rounded-xl font-bold transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 disabled:hover:scale-100 text-lg"
-          :class="
-            props.isDarkMode
-              ? 'from-gray-800 to-gray-700 hover:from-gray-700 hover:to-gray-600 shadow-gray-500/25'
-              : 'from-gray-600 to-gray-500 hover:from-gray-500 hover:to-gray-400 shadow-gray-500/25'
-          "
-          :aria-label="`Ir a la página anterior (${currentPage - 1})`"
-        >
-          <svg
-            class="w-6 h-6 mr-3"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-          Anterior
-        </button>
-
-        <div class="flex flex-wrap justify-center gap-3" role="group" aria-label="Páginas">
-          <button
-            v-for="pageNum in paginationPages"
-            :key="pageNum"
-            @click="handlePageChange(pageNum)"
-            :disabled="pageNum === currentPage"
-            :class="
-              pageNum === currentPage
-                ? props.isDarkMode
-                  ? 'bg-gradient-to-r from-cyan-600 to-purple-600 text-white shadow-lg shadow-cyan-500/25'
-                  : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/25'
-                : props.isDarkMode
-                  ? 'bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white shadow-gray-500/25'
-                  : 'bg-gray-200 hover:bg-gray-300 text-gray-700 hover:text-gray-900 shadow-gray-300/25'
-            "
-            class="px-5 py-4 rounded-xl font-bold transition-all duration-300 hover:scale-105 disabled:cursor-default min-w-[3.5rem] text-lg shadow-lg"
-            :aria-label="`${pageNum === currentPage ? 'Página actual' : 'Ir a la página'} ${pageNum}`"
-            :aria-current="pageNum === currentPage ? 'page' : undefined"
-          >
-            {{ pageNum }}
-          </button>
-        </div>
-
-        <button
-          @click="handleNextPage"
-          :disabled="!hasNextPage"
-          class="flex items-center px-8 py-4 bg-gradient-to-r text-white rounded-xl font-bold transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 disabled:hover:scale-100 text-lg"
-          :class="
-            props.isDarkMode
-              ? 'from-gray-800 to-gray-700 hover:from-gray-700 hover:to-gray-600 shadow-gray-500/25'
-              : 'from-gray-600 to-gray-500 hover:from-gray-500 hover:to-gray-400 shadow-gray-500/25'
-          "
-          :aria-label="`Ir a la página siguiente (${currentPage + 1})`"
-        >
-          Siguiente
-          <svg
-            class="w-6 h-6 ml-3"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </button>
-      </nav>
+      <!-- Pagination usando TU componente -->
+      <Pagination
+        v-if="!loading && gamesWithRating.length > 0"
+        :current-page="currentPage"
+        :total-pages="totalPages"
+        :has-next-page="hasNextPage"
+        :has-previous-page="hasPreviousPage"
+        :pagination-pages="paginationPages"
+        :is-dark-mode="isDarkMode"
+        @previous="handlePreviousPage"
+        @next="handleNextPage"
+        @go-to-page="handlePageChange"
+      />
     </main>
   </div>
 </template>
@@ -571,31 +467,5 @@ const dividerGradientClasses = computed(() =>
 
 .no-underline {
   text-decoration: none;
-}
-
-.animation-delay-1000 {
-  animation-delay: 1s;
-}
-
-.animation-delay-2000 {
-  animation-delay: 2s;
-}
-
-.animation-delay-4000 {
-  animation-delay: 4s;
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-.animate-float {
-  animation: float 3s ease-in-out infinite;
 }
 </style>

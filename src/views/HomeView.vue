@@ -9,7 +9,10 @@ import LoadingSpinner from '@/components/ui/common/LoadingSpinner.vue'
 const router = useRouter()
 
 const props = defineProps({
-  isDarkMode: Boolean,
+  isDarkMode: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 // State
@@ -74,8 +77,17 @@ const backgroundElements = computed(() => [
 const fetchGames = async () => {
   try {
     error.value = null
+    const apiKey = import.meta.env.VITE_RAWG_API_KEY
+
+    if (!apiKey || apiKey === 'your-actual-api-key-here') {
+      console.warn('RAWG API key not configured')
+      // Usar datos de ejemplo si no hay API key
+      games.value = FEATURED_GAMES.slice(0, 6)
+      return
+    }
+
     const response = await fetch(
-      `https://api.rawg.io/api/games?key=${import.meta.env.VITE_RAWG_API_KEY}&page_size=12&ordering=-rating`,
+      `https://api.rawg.io/api/games?key=${apiKey}&page_size=12&ordering=-rating`,
     )
 
     if (!response.ok) throw new Error('Failed to fetch games')
@@ -89,6 +101,8 @@ const fetchGames = async () => {
       details: err.message,
     }
     console.error('Error fetching games:', err)
+    // Fallback a juegos de ejemplo
+    games.value = FEATURED_GAMES.slice(0, 6)
   }
 }
 
@@ -145,28 +159,28 @@ onMounted(() => {
     <div class="relative z-10 max-w-7xl mx-auto px-4 py-8">
       <!-- Hero Section -->
       <HomeHeroSection
-        :isDarkMode="isDarkMode"
+        :is-dark-mode="isDarkMode"
         :loading="loading"
-        :showGameList="showGameList"
-        @startExploring="handleStartExploring"
+        :show-game-list="showGameList"
+        @start-exploring="handleStartExploring"
       />
 
       <!-- Featured Games Section -->
       <FeaturedGamesSection
-        :isDarkMode="isDarkMode"
+        :is-dark-mode="isDarkMode"
         :games="FEATURED_GAMES"
-        @gameClick="navigateToGame"
+        @game-click="navigateToGame"
       />
 
       <!-- Recommended Games Section -->
       <RecommendedGamesSection
         v-if="showGameList"
-        :isDarkMode="isDarkMode"
+        :is-dark-mode="isDarkMode"
         :games="games"
         :loading="loading"
         :error="error"
-        @gameClick="navigateToGame"
-        @viewAll="navigateToGames"
+        @game-click="navigateToGame"
+        @view-all="navigateToGames"
         @retry="handleRetryFetch"
       />
     </div>

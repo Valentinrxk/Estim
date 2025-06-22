@@ -57,8 +57,18 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  isDarkMode: Boolean,
-  stats: Object,
+  isDarkMode: {
+    type: Boolean,
+    default: false,
+  },
+  stats: {
+    type: Object,
+    default: () => ({
+      total: 0,
+      averageRating: '0.0',
+      isFull: false,
+    }),
+  },
 })
 
 const textClasses = computed(() => ({
@@ -66,22 +76,29 @@ const textClasses = computed(() => ({
   muted: props.isDarkMode ? 'text-gray-500' : 'text-gray-600',
 }))
 
+// Valores seguros con verificación defensiva
+const safeStats = computed(() => ({
+  total: props.stats?.total ?? 0,
+  averageRating: props.stats?.averageRating ?? '0.0',
+  isFull: props.stats?.isFull ?? false,
+}))
+
 const statsConfig = computed(() => [
   {
-    value: `${props.stats.total}/5`,
+    value: `${safeStats.value.total}/5`,
     label: 'Juegos Legendarios',
     color: props.isDarkMode ? 'text-yellow-400' : 'text-yellow-600',
     border: props.isDarkMode ? 'border-yellow-500/30' : 'border-yellow-400/40',
   },
   {
-    value: props.stats.averageRating,
+    value: safeStats.value.averageRating,
     label: 'Rating Promedio',
     color: props.isDarkMode ? 'text-cyan-400' : 'text-blue-600',
     border: props.isDarkMode ? 'border-cyan-500/30' : 'border-blue-400/40',
   },
   {
-    value: props.stats.isFull ? '🔥' : '📈',
-    label: props.stats.isFull ? 'Completo' : 'En Progreso',
+    value: safeStats.value.isFull ? '🔥' : '📈',
+    label: safeStats.value.isFull ? 'Completo' : 'En Progreso',
     color: props.isDarkMode ? 'text-purple-400' : 'text-purple-600',
     border: props.isDarkMode ? 'border-purple-500/30' : 'border-purple-400/40',
   },

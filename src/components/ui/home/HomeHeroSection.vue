@@ -91,9 +91,18 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  isDarkMode: Boolean,
-  loading: Boolean,
-  showGameList: Boolean,
+  isDarkMode: {
+    type: Boolean,
+    default: false,
+  },
+  loading: {
+    type: Boolean,
+    default: false,
+  },
+  showGameList: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 defineEmits(['startExploring'])
