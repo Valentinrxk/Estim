@@ -9,5 +9,6 @@ Aplicación web para gestión y detalle de juegos.
 
 El diseño de la app está en Figma:  
 [👉 Ver Figma](https://www.figma.com/design/xMzb626wVgzNjCdRz4s3AN/ESTIM?m=auto&t=cUe8fYBZEWOz3ITJ-6)
-El deployment está hecho con Netlify.
+
+El deployment está hecho con Netlify:                                                                                                                                                                                  
 [👉 Ver Deploy](https://estimapp.netlify.app/)
