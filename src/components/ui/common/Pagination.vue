@@ -43,7 +43,7 @@ const emit = defineEmits(['previous', 'next', 'goToPage'])
           pageNum === currentPage
             ? props.isDarkMode
               ? 'bg-gradient-to-r from-cyan-600 to-purple-600 text-white shadow-lg shadow-cyan-500/25'
-              : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/25'
+              : 'bg-gradient-to-r from-orange-600 to-yellow-600 text-white shadow-lg shadow-orange-500/25'
             : props.isDarkMode
               ? 'bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white shadow-gray-500/25'
               : 'bg-gray-200 hover:bg-gray-300 text-gray-700 hover:text-gray-900 shadow-gray-300/25'

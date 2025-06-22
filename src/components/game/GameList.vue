@@ -181,16 +181,18 @@ const backgroundClasses = computed(() =>
     : 'bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50',
 )
 
+// Actualizado para usar naranja/amarillo en light mode
 const titleGradientClasses = computed(() =>
   props.isDarkMode
     ? 'from-cyan-400 via-purple-400 to-pink-400'
-    : 'from-blue-600 via-purple-600 to-pink-600',
+    : 'from-orange-500 via-yellow-500 to-red-500',
 )
 
 const subtitleClasses = computed(() => (props.isDarkMode ? 'text-gray-300' : 'text-gray-600'))
 
+// Actualizado para usar naranja/amarillo en light mode
 const dividerGradientClasses = computed(() =>
-  props.isDarkMode ? 'from-cyan-400 to-purple-400' : 'from-blue-500 to-purple-500',
+  props.isDarkMode ? 'from-cyan-400 to-purple-400' : 'from-orange-500 to-yellow-500',
 )
 
 const getTop5ButtonText = (game) => {
